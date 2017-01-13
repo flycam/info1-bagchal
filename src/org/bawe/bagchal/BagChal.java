@@ -5,13 +5,6 @@ package org.bawe.bagchal;
  */
 
 public class BagChal {
-	private char[][] board = {
-			{'T',0,0,0,'T'},
-			{0,0,0,0,0},
-			{0,0,0,0,0},
-			{0,0,0,0,0},
-			{'T',0,0,0,'T'}
-	};
 
 	private Tiger[] tigers = {
 			new Tiger(0, 0),
@@ -83,7 +76,7 @@ public class BagChal {
 
 	/**
 	 * Checks if a player has won.
-	 * @return char winner, 0 if game is still active.
+	 * @return Player winner, null if game is still active.
 	 */
 	public Player getWinner(){
 		Player winner = null;
@@ -112,7 +105,6 @@ public class BagChal {
 		}
 		return numPossibleMoves;
 	}
-
 
 	public boolean checkBounds(int x, int y){
 		return x >= 0 && x < 5 && y >= 0 && y < 5;
@@ -217,7 +209,6 @@ public class BagChal {
 		return null;
 	}
 
-
 	public char[][] getBoard(){
 		char[][] board = {
 				{0,0,0,0,0},
@@ -236,7 +227,6 @@ public class BagChal {
 				board[tiger.getPos_y()][tiger.getPos_x()] = 'T';
 			}
 		}
-
-		return this.board;
+		return board;
 	}
 }

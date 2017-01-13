@@ -51,10 +51,19 @@ public class BagChalView {
         }
     }
 
-    public void printGameStatus(int numGoatsEaten, int numGoatsAvailable, char currentPlayer){
+    public void printGameStatus(int numGoatsEaten, int numGoatsAvailable, Player currentPlayer){
         System.out.println("Number of Goats eaten: "+numGoatsEaten);
         System.out.println("Number of Goat to set: "+numGoatsAvailable);
-        System.out.println("It's "+ ((currentPlayer == 'G') ? "Goat's":"Tiger's") + " turn.");
+        System.out.println("It's "+ ((currentPlayer == Player.GOAT) ? "Goat's":"Tiger's") + " turn.");
+    }
+
+    public void printWinner(Player winner){
+        System.out.println("");
+        System.out.println("**** Game over. " + ((winner == Player.GOAT) ? "Goat": "Tiger") + "won. ****");
+    }
+
+    public void askForInput(int entryLength){
+        System.out.print("Please enter coordinates ("+ entryLength +" Digits): ");
     }
 
     public void askForValidInput(){
