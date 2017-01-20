@@ -1,19 +1,20 @@
 package org.bawe.bagchal;
 
 /**
- * Created by stephan on 1/13/17.
+ * Tiger class for game figures containing specifics for Tiger.
+ * @Author Stephan Westphal
  */
 class Tiger extends Figure{
-    private int numGoatsEaten = 0;
-
     public static int maxInstances = 4;
     public static int maxDistance = 2;
 
+    /**
+     * Instantiates a new Tiger with initial placement.
+     * @param x Column to place tiger on
+     * @param y Row to place tiger on
+     */
     Tiger(int x, int y){
         super(x, y);
     }
 
-    void eat(){
-        this.numGoatsEaten++;
-    }
 }

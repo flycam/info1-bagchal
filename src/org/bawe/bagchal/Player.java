@@ -1,7 +1,8 @@
 package org.bawe.bagchal;
 
 /**
- * Created by stephan on 1/13/17.
+ * Players available in the Game, GOAT or TIGER.
+ * @Author Stephan Westphal
  */
 public enum Player{
     GOAT, TIGER

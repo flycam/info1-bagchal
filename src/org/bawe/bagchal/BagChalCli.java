@@ -1,5 +1,10 @@
 package org.bawe.bagchal;
 
+
+/**
+ * CLI Version of Bagchal.
+ * Initializes View, Controller and Model (Game).
+ */
 public class BagChalCli {
 
     public static void main(String[] args) {

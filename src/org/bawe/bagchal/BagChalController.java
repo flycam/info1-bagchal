@@ -1,19 +1,37 @@
 package org.bawe.bagchal;
 
 /**
- * Created by stephan on 1/12/17.
+ * BagChal Controller, controlls the flow of the game with this CLI implementation.
+ * @Author Stephan Westphal
  */
 public class BagChalController {
+    /**
+     * Current game, will be initialized for each game to play.
+     */
     private BagChal game;
+
+    /**
+     * View. Will be passed from Main depending on the user interface.
+     */
     private BagChalView view;
+
+    /**
+     * input class to read from cli standard-input.
+     */
     private Input input;
 
+    /**
+     * Constructor - requires a valid view and newly initialized game object.
+     */
     public BagChalController(BagChalView view, BagChal game){
         this.view = view;
         this.game = game;
         this.input = new Input();
     }
 
+    /**
+     * runs the game and returns after one party wins.
+     */
     public void runGame(){
         Player winner;
         do{
@@ -28,20 +46,23 @@ public class BagChalController {
 
             this.waitForValidEntry(entryLength);
 
-            //winner = this.game.getWinner();
-            winner = null;
+            winner = this.game.getWinner();
+            //winner = null;
         }while(winner == null);
+
+        this.view.renderBoard(this.game.getBoard());
         this.view.printWinner(winner);
     }
 
+    /**
+     * Blocking-method to wait for input, check if and handle exceptions thrown from the game Model implementing the
+     * game logic.
+     */
     private void waitForValidEntry(int entryLength){
         boolean waiting;
         do{
             waiting = true;
             String line = this.input.readLine();
-
-            //ToDo: DEBUG below, remove!!!
-            System.out.println("Input was '"+line+"' (length: "+line.length()+")");
 
             if(line.length() == entryLength){
                 // parse
@@ -65,6 +86,5 @@ public class BagChalController {
                 this.view.askForValidInput(entryLength);
             }
         }while(waiting);
-
     }
 }

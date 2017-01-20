@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 
 /**
  * Helper Class for reading String and Integers from standard console input.
- *
+ * Expanded by Stephan Westphal for parsing input to an array of integers.
  * @author pape
- * @conributer bawe
  */
 public class Input {
 
@@ -35,9 +34,9 @@ public class Input {
     /**
      * Converts a String input to integer. Returns -1 if input cannot be parsed to integer. (0 is a valid input)
      */
-    public int parseInt(String zahl) {
+    public int parseInt(String number) {
         try {
-            return Integer.parseInt(zahl);
+            return Integer.parseInt(number);
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -46,11 +45,11 @@ public class Input {
     /**
      * Accepts a String and tries to parse digits as integer array. Fills with -1 if string position was not a digit.
      */
-    public int[] parseIntArray(String zahl){
-        int[] result = new int[zahl.length()];
-        for(int i = 0; i < zahl.length(); i++){
+    public int[] parseIntArray(String number){
+        int[] result = new int[number.length()];
+        for(int i = 0; i < number.length(); i++){
             try{
-                result[i] = Integer.parseInt(zahl.substring(i,i+1));
+                result[i] = Integer.parseInt(number.substring(i,i+1));
             }catch (NumberFormatException e){
                 result[i] = -1;
             }
