@@ -3,18 +3,18 @@ package org.bawe.bagchal;
 /**
  * Created by stephan on 1/13/17.
  */
-public class Goat extends Figure {
+class Goat extends Figure {
     private boolean eaten = false;
 
-    public Goat(int x, int y){
+    Goat(int x, int y){
         super(x, y);
     }
 
-    public boolean isEaten(){
+    boolean isEaten(){
         return this.eaten;
     }
 
-    public void eat(){
+    void getEaten(){
         this.eaten = true;
     }
 }

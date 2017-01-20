@@ -17,42 +17,54 @@ public class BagChalController {
     public void runGame(){
         Player winner;
         do{
-            Player currentPlayer = game.getCurrentPlayer();
-            int numGoatsAvailable = game.getNumGoatsAvailable();
+            Player currentPlayer = this.game.getCurrentPlayer();
+            int numGoatsAvailable = this.game.getNumGoatsAvailable();
             this.view.renderBoard(this.game.getBoard());
-            this.view.printGameStatus(game.getNumGoatsEaten(), numGoatsAvailable, currentPlayer);
+            this.view.printGameStatus(this.game.getNumGoatsEaten(), numGoatsAvailable, currentPlayer);
 
             int entryLength = (currentPlayer == Player.GOAT && numGoatsAvailable > 0) ? 2 : 4;
 
             this.view.askForInput(entryLength);
-            while(this.waitForValidEntry(entryLength)){
-                int[] entry = {0,0,0,0};
 
-                if(currentPlayer == Player.GOAT){
-                    if(entryLength == 4){
-                        this.game.moveGoat(entry[0], entry[1], entry[2], entry[3]);
-                    }else{
-                        this.game.setGoat(entry[0], entry[1]);
-                    }
-                }else{
-                    this.game.moveTiger(entry[0], entry[1], entry[2], entry[3]);
-                }
-            }
+            this.waitForValidEntry(entryLength);
 
-            winner = this.game.getWinner();
+            //winner = this.game.getWinner();
+            winner = null;
         }while(winner == null);
         this.view.printWinner(winner);
     }
 
-    private boolean waitForValidEntry(int entryLength){
+    private void waitForValidEntry(int entryLength){
+        boolean waiting;
         do{
-            int move = this.input.readInt();
-            if(move > 0 && move < 5555){
+            waiting = true;
+            String line = this.input.readLine();
 
+            //ToDo: DEBUG below, remove!!!
+            System.out.println("Input was '"+line+"' (length: "+line.length()+")");
+
+            if(line.length() == entryLength){
+                // parse
+                int[] entry= this.input.parseIntArray(line);
+
+                try{
+                    if(entryLength == 4){
+                        this.game.moveFigure(entry[0], entry[1], entry[2], entry[3]);
+                    }else{
+                        this.game.placeFigure(entry[0], entry[1]);
+                    }
+                    waiting = false;
+                }catch(IllegalMoveException e){
+                    this.view.printMoveError(e.getMessage());
+                    this.view.askForInput(entryLength);
+                }catch(OutOfBoundsException e){
+                    this.view.printOutOfBoundsError();
+                    this.view.askForValidInput(entryLength);
+                }
             }else{
-                this.view.askForValidInput();
+                this.view.askForValidInput(entryLength);
             }
-        }while(true);
+        }while(waiting);
 
     }
 }

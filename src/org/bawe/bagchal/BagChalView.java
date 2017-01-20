@@ -30,11 +30,11 @@ public class BagChalView {
                 {'+','-','+','-','+','-','+','-','+'},
                 {'|','\\','|','/','|','\\','|','/','|'},
                 {'+','-','+','-','+','-','+','-','+'},
-                {'|','\\','|','/','|','\\','|','/','|'},
+                {'|','/','|','\\','|','/','|','\\','|'},
                 {'+','-','+','-','+','-','+','-','+'},
                 {'|','\\','|','/','|','\\','|','/','|'},
                 {'+','-','+','-','+','-','+','-','+'},
-                {'|','\\','|','/','|','\\','|','/','|'},
+                {'|','/','|','\\','|','/','|','\\','|'},
                 {'+','-','+','-','+','-','+','-','+'}
         };
         for(int i = 0; i < board.length; i++){
@@ -59,14 +59,27 @@ public class BagChalView {
 
     public void printWinner(Player winner){
         System.out.println("");
-        System.out.println("**** Game over. " + ((winner == Player.GOAT) ? "Goat": "Tiger") + "won. ****");
+        System.out.println("**** Game over. " + ((winner == Player.GOAT) ? "Goat": "Tiger") + " won. ****");
+    }
+
+    public void printMoveError(String message){
+        System.out.println("!!! Invalid Move: "+message);
+    }
+
+    public void printOutOfBoundsError(){
+        System.out.println("!!! Move was out of bounds, please choose coordinates between 0 and 4.");
     }
 
     public void askForInput(int entryLength){
         System.out.print("Please enter coordinates ("+ entryLength +" Digits): ");
     }
 
-    public void askForValidInput(){
-        System.out.println("Please enter move in this format: 1234 (from_x,from_y,to_x,to_y)");
+    public void askForValidInput(int entryLength){
+        System.out.print("Please enter your move in the format ");
+        if(entryLength == 4){
+            System.out.print("1234 (from_x,from_y,to_x,to_y): ");
+        }else{
+            System.out.print("12 (to_x,to_y): ");
+        }
     }
 }

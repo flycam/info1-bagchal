@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Hilfeklasse zum Einlesen von Zeichenketten und Zahlen von der Konsole.
+ * Helper Class for reading String and Integers from standard console input.
  *
  * @author pape
+ * @conributer bawe
  */
 public class Input {
 
     private BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
     /**
-     * Gibt die n�chste Eingabezeile als String zur�ck.
+     * Reads standard input and returns the last line.
      */
     public String readLine() {
         try {
@@ -25,21 +26,35 @@ public class Input {
     }
 
     /**
-     * Gibt die n�chste Eingabezeile als int-Wert zur�ck. Es werden
-     * nur die ersten Ziffer inklusive Vorzeichen ber�cksichtigt.
+     * Reads line from standard input and parses it as an integer.
      */
     public int readInt() {
         return parseInt(readLine());
     }
 
     /**
-     * Wandelt <code>zahl</code> in einen int-Wert.
+     * Converts a String input to integer. Returns -1 if input cannot be parsed to integer. (0 is a valid input)
      */
     public int parseInt(String zahl) {
         try {
             return Integer.parseInt(zahl);
         } catch (NumberFormatException e) {
-            return 0;
+            return -1;
         }
+    }
+
+    /**
+     * Accepts a String and tries to parse digits as integer array. Fills with -1 if string position was not a digit.
+     */
+    public int[] parseIntArray(String zahl){
+        int[] result = new int[zahl.length()];
+        for(int i = 0; i < zahl.length(); i++){
+            try{
+                result[i] = Integer.parseInt(zahl.substring(i,i+1));
+            }catch (NumberFormatException e){
+                result[i] = -1;
+            }
+        }
+        return result;
     }
 }

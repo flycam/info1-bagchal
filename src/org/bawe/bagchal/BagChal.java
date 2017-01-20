@@ -1,5 +1,6 @@
 package org.bawe.bagchal;
 
+
 /**
  * Created by stephan on 12/21/16.
  */
@@ -106,28 +107,24 @@ public class BagChal {
 		return numPossibleMoves;
 	}
 
-	public boolean checkBounds(int x, int y){
+	private boolean checkBounds(int x, int y){
 		return x >= 0 && x < 5 && y >= 0 && y < 5;
 	}
 
-	public int checkMoveValidity(int from_x, int from_y, int to_x, int to_y){
-		if(! checkBounds(from_x, from_y) || !checkBounds(to_x, to_y)){
-			return -1; // destination out of Range
-		}
-
+	private int checkMoveValidity(int from_x, int from_y, int to_x, int to_y){
 		return (BagChal.validMoves[from_y*5 + from_x][to_y*5 + to_x]);
 	}
 
 	public Player getOccupancyType(int x, int y){
 		Player occupant = null;
-		for(Goat goat: this.goats){
-			if( goat != null && goat.getPos_x() != x && goat.getPos_y() != y){
+		for(Goat goat : this.goats){
+			if( goat != null && !goat.isEaten() && goat.getPos_x() == x && goat.getPos_y() == y){
 				occupant = Player.GOAT;
 				break; // no need to search further, as we just found a goat on this position
 			}
 		}
-		for(Tiger tiger: this.tigers){
-			if( tiger != null && tiger.getPos_x() != x && tiger.getPos_y() != y){
+		for(Tiger tiger : this.tigers){
+			if( tiger != null && tiger.getPos_x() == x && tiger.getPos_y() == y){
 				occupant = Player.TIGER;
 				break; // no need to search further, as we just found a tiger on this position
 			}
@@ -153,42 +150,105 @@ public class BagChal {
 		return numPossibleMoves;
 	}
 
-	public boolean setGoat(int dst_x, int dst_y){
-		return true;
+	/**
+	 * places a goat if it is allowed.
+	 */
+	public void placeFigure(int x, int y){
+		if(!this.checkBounds(x, y)){
+			throw new OutOfBoundsException();
+		}
+
+		if(this.checkOccupancy(x, y)){
+			throw new IllegalMoveException("Field is occupied.");
+		}
+
+		if(this.currentPlayer == Player.GOAT){
+			if(this.getNumGoatsAvailable() < 1){
+				throw new IllegalMoveException("No goats remaining to be placed");
+			}
+			// all checks passed, place goat;
+			if(this.placeGoat(x, y)){
+				this.currentPlayer = Player.TIGER;
+			}
+		}else{
+			throw new IllegalMoveException("Tiger cannot be placed");
+		}
 	}
 
-	public boolean moveGoat(int src_x, int src_y, int dst_x, int dst_y) {
-		Goat goat = this.findGoat(src_x, src_y);
-		if(goat == null) return false; // Goat not found
+	/**
+	 * moves a figure if allowed.
+	 */
+	public void moveFigure(int src_x, int src_y, int dst_x, int dst_y){
+		if(!this.checkBounds(dst_x, dst_y)){
+			throw new OutOfBoundsException();
+		}
 
-		int moveType = this.checkMoveValidity(src_x, src_y, dst_x, dst_y);
-		if(moveType != 1) return false; // invalid move
+		if(this.checkOccupancy(dst_x, dst_y)){
+			throw new IllegalMoveException("Field is occupied.");
+		}
+
+		int moveValidity = this.checkMoveValidity(src_x, src_y, dst_x, dst_y);
+		if((this.currentPlayer == Player.GOAT && moveValidity != 1) ||
+				(this.currentPlayer == Player.TIGER && moveValidity < 1)){
+			throw new IllegalMoveException("Cannot move in this direction");
+		}
+
+		if(this.currentPlayer == Player.GOAT){
+			if(this.getNumGoatsAvailable() > 0){
+				throw new IllegalMoveException("All remaining goats have to be placed before they can be moved.");
+			}
+			// all checks passed, place goat;
+			this.moveGoat(src_x, src_y, dst_x, dst_y);
+			this.currentPlayer = Player.TIGER;
+		}else{
+			this.moveTiger(src_x, src_y, dst_x, dst_y, (moveValidity == 2));
+			this.currentPlayer = Player.GOAT;
+		}
+	}
+
+
+
+	private boolean placeGoat(int x, int y){
+		for (int i = 0; i < this.goats.length; i++){
+			if(this.goats[i] == null){
+				this.goats[i] = new Goat(x, y);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void moveGoat(int src_x, int src_y, int dst_x, int dst_y) {
+		Goat goat = this.findGoat(src_x, src_y);
+		if(goat == null){
+			throw new IllegalMoveException("No goat at position "+src_x+"x"+src_y);
+		}
 
 		goat.move(dst_x, dst_y);
-		return true;
 	}
 
-	public boolean moveTiger(int src_x, int src_y, int dst_x, int dst_y){
+	private void moveTiger(int src_x, int src_y, int dst_x, int dst_y, boolean jump){
 		Tiger tiger = this.findTiger(src_x, src_y);
-		if(tiger == null) return false; // Tiger not found
+		if(tiger == null){
+			throw new IllegalMoveException("No tiger at position "+src_x+","+src_y);
+		}
 
-		int moveType = this.checkMoveValidity(src_x, src_y, dst_x, dst_y);
-		if(moveType < 1 || moveType > 2) return false; // invalid move
+		if(jump){
+			int jump_x = src_x + (dst_x - src_x)/2;
+			int jump_y = src_y + (dst_y - src_y)/2;
+			Player jump_occupant = this.getOccupancyType(jump_x, jump_y);
 
-
-		if(this.checkOccupancy(dst_x, dst_y)) return false; // Field is occupied.
-
-		if(moveType == 2){
-			// ToDo: calculate jumped-coordinates.
-			Player jump_occupant = this.getOccupancyType(dst_x, dst_y);
-			if( jump_occupant == Player.TIGER) return false;
 			if( jump_occupant == Player.GOAT){
 				// eat it!
-
+				tiger.eat();
+				this.eatGoat(jump_x, jump_y);
+			}else if( jump_occupant == Player.TIGER){
+				throw new IllegalMoveException("Cannot jump over another tiger ("+jump_x+","+jump_y+").");
+			}else if(jump_occupant == null){
+				throw new IllegalMoveException("Cannot jump over empty field ("+jump_x+","+jump_y+").");
 			}
 		}
 		tiger.move(dst_x, dst_y);
-		return true;
 	}
 
 	private Tiger findTiger(int x, int y){
@@ -202,11 +262,19 @@ public class BagChal {
 
 	private Goat findGoat(int x, int y){
 		for (Goat goat : this.goats){
-			if(goat.getPos_x() == x && goat.getPos_y() == y){
+			if(goat != null && goat.getPos_x() == x && goat.getPos_y() == y){
 				return goat;
 			}
 		}
 		return null;
+	}
+
+	private boolean eatGoat(int x, int y){
+		Goat goat = this.findGoat(x, y);
+		if(goat != null){
+			goat.getEaten();
+			return true;
+		}else return false;
 	}
 
 	public char[][] getBoard(){
@@ -217,12 +285,12 @@ public class BagChal {
 				{0,0,0,0,0},
 				{0,0,0,0,0}
 		};
-		for(Goat goat: this.goats){
-			if( goat != null ){
+		for(Goat goat : this.goats){
+			if( goat != null && !goat.isEaten()){
 				board[goat.getPos_y()][goat.getPos_x()] = 'G';
 			}
 		}
-		for(Tiger tiger: this.tigers){
+		for(Tiger tiger : this.tigers){
 			if( tiger != null ){
 				board[tiger.getPos_y()][tiger.getPos_x()] = 'T';
 			}
