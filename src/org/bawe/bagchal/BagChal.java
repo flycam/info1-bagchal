@@ -62,6 +62,9 @@ public class BagChal {
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1, 1, 0, 0, 2, 1, 0}
 			};
 
+	/**
+	 * BagChal Game Model constructor. Nothing to initialize here.
+	 */
 	public void BagChal(){
 	}
 
@@ -129,12 +132,12 @@ public class BagChal {
 		};
 		for(Goat goat : this.goats){
 			if( goat != null && !goat.isEaten()){
-				board[goat.getPos_y()][goat.getPos_x()] = 'G';
+				board[goat.getRow()][goat.getColumn()] = 'G';
 			}
 		}
 		for(Tiger tiger : this.tigers){
 			if( tiger != null ){
-				board[tiger.getPos_y()][tiger.getPos_x()] = 'T';
+				board[tiger.getRow()][tiger.getColumn()] = 'T';
 			}
 		}
 		return board;
@@ -142,15 +145,15 @@ public class BagChal {
 
 	/**
 	 * places a goat if it is allowed.
-	 * @param x column of destination on board, ranging from 0 to 4
-	 * @param y row of destination on board, ranging from 0 to 4
+	 * @param column column of destination on board, ranging from 0 to 4
+	 * @param row row of destination on board, ranging from 0 to 4
 	 */
-	public void placeFigure(int x, int y){
-		if(!this.checkBounds(x, y)){
+	public void placeFigure(int column, int row){
+		if(!this.checkBounds(column, row)){
 			throw new OutOfBoundsException();
 		}
 
-		if(this.checkOccupancy(x, y)){
+		if(this.checkOccupancy(column, row)){
 			throw new IllegalMoveException("Field is occupied.");
 		}
 
@@ -159,7 +162,7 @@ public class BagChal {
 				throw new IllegalMoveException("No goats remaining to be placed");
 			}
 			// all checks passed, place goat;
-			if(this.placeGoat(x, y)){
+			if(this.placeGoat(column, row)){
 				this.currentPlayer = Player.TIGER;
 			}
 		}else{
@@ -169,21 +172,21 @@ public class BagChal {
 
 	/**
 	 * moves the currently active figure if the game allows it.
-	 * @param src_x column of figure to move, ranging from 0 to 4
-	 * @param src_y row of figure to move, ranging from 0 to 4
-	 * @param dst_x column of destination on board, ranging from 0 to 4
-	 * @param dst_y row of destination on board, ranging from 0 to 4
+	 * @param fromColumn column of figure to move, ranging from 0 to 4
+	 * @param fromRow row of figure to move, ranging from 0 to 4
+	 * @param toColumn column of destination on board, ranging from 0 to 4
+	 * @param toRow row of destination on board, ranging from 0 to 4
 	 */
-	public void moveFigure(int src_x, int src_y, int dst_x, int dst_y){
-		if(!this.checkBounds(dst_x, dst_y)){
+	public void moveFigure(int fromColumn, int fromRow, int toColumn, int toRow){
+		if(!this.checkBounds(toColumn, toRow)){
 			throw new OutOfBoundsException();
 		}
 
-		if(this.checkOccupancy(dst_x, dst_y)){
+		if(this.checkOccupancy(toColumn, toRow)){
 			throw new IllegalMoveException("Field is occupied.");
 		}
 
-		int moveValidity = this.checkMoveValidity(src_x, src_y, dst_x, dst_y);
+		int moveValidity = this.checkMoveValidity(fromColumn, fromRow, toColumn, toRow);
 		if((this.currentPlayer == Player.GOAT && moveValidity != 1) ||
 				(this.currentPlayer == Player.TIGER && moveValidity < 1)){
 			throw new IllegalMoveException("Cannot move in this direction");
@@ -194,10 +197,10 @@ public class BagChal {
 				throw new IllegalMoveException("All remaining goats have to be placed before they can be moved.");
 			}
 			// all checks passed, place goat;
-			this.moveGoat(src_x, src_y, dst_x, dst_y);
+			this.moveGoat(fromColumn, fromRow, toColumn, toRow);
 			this.currentPlayer = Player.TIGER;
 		}else{
-			this.moveTiger(src_x, src_y, dst_x, dst_y, (moveValidity == 2));
+			this.moveTiger(fromColumn, fromRow, toColumn, toRow, (moveValidity == 2));
 			this.currentPlayer = Player.GOAT;
 		}
 	}
@@ -206,8 +209,8 @@ public class BagChal {
 	/**
 	 * Simple check to see if provided coordinated are within the bounds of the game board.
 	 */
-	private boolean checkBounds(int x, int y){
-		return x >= 0 && x < 5 && y >= 0 && y < 5;
+	private boolean checkBounds(int column, int row){
+		return column >= 0 && column < 5 && row >= 0 && row < 5;
 	}
 
 	/**
@@ -216,7 +219,7 @@ public class BagChal {
 	private int countPossibleTigerMoves(){
 		int numPossibleMoves = 0;
 		for (Tiger tiger : this.tigers){
-			numPossibleMoves += this.countPossibleMoves(tiger.getPos_x(), tiger.getPos_y(), Tiger.maxDistance);
+			numPossibleMoves += this.countPossibleMoves(tiger.getColumn(), tiger.getRow(), Tiger.maxDistance);
 		}
 		return numPossibleMoves;
 	}
@@ -224,19 +227,19 @@ public class BagChal {
 	/**
 	 * Counts the theoretical possible moves of a figure with a given maximum travel distance (usually 1). Does not
 	 * check if it can jump, only if there are free fields.
-	 * @param start_x column of figure on board
-	 * @param start_y row of figure on board
+	 * @param fromColumn column of figure on board
+	 * @param fromRow row of figure on board
 	 * @return the absolute maximum number of possible moves
 	 */
-	private int countPossibleMoves(int start_x, int start_y, int max_distance){
+	private int countPossibleMoves(int fromColumn, int fromRow, int max_distance){
 		int numPossibleMoves = 0;
 		for (int x = -max_distance; x <= max_distance; x++){
-			int dst_x = start_x + x;
+			int dst_x = fromColumn + x;
 			if(dst_x >= 0 && dst_x < 5){
 				for (int y = -max_distance; y <= max_distance; y++){
-					int dst_y = start_y + y;
+					int dst_y = fromRow + y;
 					if(this.checkBounds(dst_x, dst_y)){
-						if(this.checkMoveValidity(start_x, start_y, dst_x, dst_y) > 0 && !this.checkOccupancy(dst_x, dst_y)){
+						if(this.checkMoveValidity(fromColumn, fromRow, dst_x, dst_y) > 0 && !this.checkOccupancy(dst_x, dst_y)){
 							numPossibleMoves++;
 						}
 					}
@@ -248,32 +251,32 @@ public class BagChal {
 
 	/**
 	 * Checks whether a move is valid according to the adjacency-matrix. Easier than calculating it.
-	 * @param from_x Column of figure to move
-	 * @param from_y Row of figure to move
-	 * @param to_x Column to move figure to
-	 * @param to_y Row to move figure to
+	 * @param fromColumn Column of figure to move
+	 * @param fromRow Row of figure to move
+	 * @param toColumn Column to move figure to
+	 * @param toRow Row to move figure to
 	 * @return number of hops of travel are possible (0: none, 1: move, 2: jump)
 	 */
-	private int checkMoveValidity(int from_x, int from_y, int to_x, int to_y){
-		return (BagChal.validMoves[from_y*5 + from_x][to_y*5 + to_x]);
+	private int checkMoveValidity(int fromColumn, int fromRow, int toColumn, int toRow){
+		return (BagChal.validMoves[fromRow*5 + fromColumn][toRow*5 + toColumn]);
 	}
 
 	/**
 	 * checks and returns the type of occupant on the given field.
-	 * @param x Column of field
-	 * @param y Row of field
+	 * @param column Column of field
+	 * @param row Row of field
 	 * @return {@link Player} GOAT, TIGER or null if empty.
 	 */
-	private Player getOccupancyType(int x, int y){
+	private Player getOccupancyType(int column, int row){
 		Player occupant = null;
 		for(Goat goat : this.goats){
-			if( goat != null && !goat.isEaten() && goat.getPos_x() == x && goat.getPos_y() == y){
+			if( goat != null && !goat.isEaten() && goat.getColumn() == column && goat.getRow() == row){
 				occupant = Player.GOAT;
 				break; // no need to search further, as we just found a goat on this position
 			}
 		}
 		for(Tiger tiger : this.tigers){
-			if( tiger != null && tiger.getPos_x() == x && tiger.getPos_y() == y){
+			if( tiger != null && tiger.getColumn() == column && tiger.getRow() == row){
 				occupant = Player.TIGER;
 				break; // no need to search further, as we just found a tiger on this position
 			}
@@ -283,24 +286,24 @@ public class BagChal {
 
 	/**
 	 * checks if a field is empty.
-	 * @param x Column of field
-	 * @param y Row of field
+	 * @param column Column of field
+	 * @param row Row of field
 	 * @return boolean true if not empty.
 	 */
-	private boolean checkOccupancy(int x, int y){
-		return this.getOccupancyType(x, y) != null;
+	private boolean checkOccupancy(int column, int row){
+		return this.getOccupancyType(column, row) != null;
 	}
 
 	/**
 	 * Places a goat to the specified cordinates - does not check if it can.
-	 * @param x Column of field to place on
-	 * @param y Row of field to place on
+	 * @param column Column of field to place on
+	 * @param row Row of field to place on
 	 * @return  true if successfull
 	 * */
-	private boolean placeGoat(int x, int y){
+	private boolean placeGoat(int column, int row){
 		for (int i = 0; i < this.goats.length; i++){
 			if(this.goats[i] == null){
-				this.goats[i] = new Goat(x, y);
+				this.goats[i] = new Goat(column, row);
 				return true;
 			}
 		}
@@ -309,60 +312,60 @@ public class BagChal {
 
 	/**
 	 * Moves a goat from the specified location to the destination - no checks for validity.
-	 * @param from_x Column of figure to move
-	 * @param from_y Row of figure to move
-	 * @param to_x Column to move figure to
-	 * @param to_y Row to move figure to
+	 * @param fromColumn Column of figure to move
+	 * @param fromRow Row of figure to move
+	 * @param toColumn Column to move figure to
+	 * @param toRow Row to move figure to
 	 * */
-	private void moveGoat(int from_x, int from_y, int to_x, int to_y) {
-		Goat goat = this.findGoat(from_x, from_y);
+	private void moveGoat(int fromColumn, int fromRow, int toColumn, int toRow) {
+		Goat goat = this.findGoat(fromColumn, fromRow);
 		if(goat == null){
-			throw new IllegalMoveException("No goat at position "+from_x+"x"+from_y);
+			throw new IllegalMoveException("No goat at position "+fromColumn+"x"+fromRow);
 		}
-		goat.move(to_x, to_y);
+		goat.move(toColumn, toRow);
 	}
 
 	/**
 	 * Moves a tiger from the specified location to the destination. Contains checks if the Tiger is found at the
 	 * location and a jump is valid. Does not check whether the from/to coordinates are valid.
-	 * @param from_x Column of figure to move
-	 * @param from_y Row of figure to move
-	 * @param to_x Column to move figure to
-	 * @param to_y Row to move figure to
+	 * @param fromColumn Column of figure to move
+	 * @param fromRow Row of figure to move
+	 * @param toColumn Column to move figure to
+	 * @param toRow Row to move figure to
 	 * @param jump whether to jump or not.
 	 * */
-	private void moveTiger(int from_x, int from_y, int to_x, int to_y, boolean jump){
-		Tiger tiger = this.findTiger(from_x, from_y);
+	private void moveTiger(int fromColumn, int fromRow, int toColumn, int toRow, boolean jump){
+		Tiger tiger = this.findTiger(fromColumn, fromRow);
 		if(tiger == null){
-			throw new IllegalMoveException("No tiger at position "+from_x+","+from_y);
+			throw new IllegalMoveException("No tiger at position "+fromColumn+","+fromRow);
 		}
 
 		if(jump){
-			int jump_x = from_x + (to_x - from_x)/2;
-			int jump_y = from_y + (to_y - from_y)/2;
-			Player jump_occupant = this.getOccupancyType(jump_x, jump_y);
+			int jumpedColumn = fromColumn + (toColumn - fromColumn)/2;
+			int jumpedRow = fromRow + (toRow - fromRow)/2;
+			Player jump_occupant = this.getOccupancyType(jumpedColumn, jumpedRow);
 
 			if(jump_occupant == Player.GOAT){
 				// eat it!
-				this.eatGoat(jump_x, jump_y);
+				this.eatGoat(jumpedColumn, jumpedRow);
 			}else if(jump_occupant == Player.TIGER){
-				throw new IllegalMoveException("Cannot jump over another tiger ("+jump_x+","+jump_y+").");
+				throw new IllegalMoveException("Cannot jump over another tiger ("+jumpedColumn+","+jumpedRow+").");
 			}else if(jump_occupant == null){
-				throw new IllegalMoveException("Cannot jump over empty field ("+jump_x+","+jump_y+").");
+				throw new IllegalMoveException("Cannot jump over empty field ("+jumpedColumn+","+jumpedRow+").");
 			}
 		}
-		tiger.move(to_x, to_y);
+		tiger.move(toColumn, toRow);
 	}
 
 	/**
 	 * finds and returns a tiger by coordinates
-	 * @param x Column of field to place on
-	 * @param y Row of field to place on
+	 * @param column Column of field to place on
+	 * @param row Row of field to place on
 	 * @return  Tiger if found, else null
 	 */
-	private Tiger findTiger(int x, int y){
+	private Tiger findTiger(int column, int row){
 		for (Tiger tiger : this.tigers){
-			if(tiger.getPos_x() == x && tiger.getPos_y() == y){
+			if(tiger.getColumn() == column && tiger.getRow() == row){
 				return tiger;
 			}
 		}
@@ -371,13 +374,13 @@ public class BagChal {
 
 	/**
 	 * finds and returns a goat by coordinates
-	 * @param x Column of field to place on
-	 * @param y Row of field to place on
+	 * @param column Column of field to place on
+	 * @param row Row of field to place on
 	 * @return  Goat if found, else null
 	 */
-	private Goat findGoat(int x, int y){
+	private Goat findGoat(int column, int row){
 		for (Goat goat : this.goats){
-			if(goat != null && !goat.isEaten() && goat.getPos_x() == x && goat.getPos_y() == y){
+			if(goat != null && !goat.isEaten() && goat.getColumn() == column && goat.getRow() == row){
 				return goat;
 			}
 		}
@@ -386,12 +389,12 @@ public class BagChal {
 
 	/**
 	 * Feed the tiger - takes coordinates of a goat jumped by a tiger and sets it's status to eaten.
-	 * @param x Column of field of goat to be eaten
-	 * @param y Row of field of goat to be eaten
+	 * @param column Column of field of goat to be eaten
+	 * @param row Row of field of goat to be eaten
 	 * @return  true if goat was found and eaten, else false
 	 */
-	private boolean eatGoat(int x, int y){
-		Goat goat = this.findGoat(x, y);
+	private boolean eatGoat(int column, int row){
+		Goat goat = this.findGoat(column, row);
 		if(goat != null){
 			goat.getEaten();
 			return true;

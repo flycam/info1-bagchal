@@ -83,46 +83,4 @@ public class BagChalModelTests extends TestCase{
         game.moveFigure(4,4,2,4); // eats 3,4
         assertTrue(game.getWinner() == Player.TIGER);
     }
-
-
-    public void testGoatConstructor(){
-        Goat goat = new Goat(1, 2);
-        assertTrue(goat != null);
-        assertEquals(goat.getPos_x(), 1);
-        assertEquals(goat.getPos_y(), 2);
-    }
-
-    public void testGoatMove(){
-        Goat goat = new Goat(1, 2);
-        assertTrue(goat != null);
-        assertEquals(goat.getPos_x(), 1);
-        assertEquals(goat.getPos_y(), 2);
-        goat.move(4,3);
-        assertEquals(goat.getPos_x(), 4);
-        assertEquals(goat.getPos_y(), 3);
-    }
-
-    public void testGoatEat(){
-        Goat goat = new Goat(1, 2);
-        assertTrue(!goat.isEaten());
-        goat.getEaten();
-        assertTrue(goat.isEaten());
-    }
-
-    public void testTigerConstructor(){
-        Tiger tiger = new Tiger(1, 2);
-        assertTrue(tiger != null);
-        assertEquals(tiger.getPos_x(), 1);
-        assertEquals(tiger.getPos_y(), 2);
-    }
-
-    public void testTigerMove(){
-        Tiger tiger = new Tiger(1, 2);
-        assertTrue(tiger != null);
-        assertEquals(tiger.getPos_x(), 1);
-        assertEquals(tiger.getPos_y(), 2);
-        tiger.move(4,3);
-        assertEquals(tiger.getPos_x(), 4);
-        assertEquals(tiger.getPos_y(), 3);
-    }
 }

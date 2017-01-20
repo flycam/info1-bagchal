@@ -10,11 +10,11 @@ class Goat extends Figure {
 
     /**
      * Instantiates a new Goat with initial placement.
-     * @param x Column to place goat on
-     * @param y Row to place goat on
+     * @param column Column to place goat on
+     * @param row Row to place goat on
      */
-    Goat(int x, int y){
-        super(x, y);
+    Goat(int column, int row){
+        super(column, row);
     }
 
     /**

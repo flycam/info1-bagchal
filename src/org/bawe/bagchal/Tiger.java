@@ -10,11 +10,11 @@ class Tiger extends Figure{
 
     /**
      * Instantiates a new Tiger with initial placement.
-     * @param x Column to place tiger on
-     * @param y Row to place tiger on
+     * @param column Column to place tiger on
+     * @param row Row to place tiger on
      */
-    Tiger(int x, int y){
-        super(x, y);
+    Tiger(int column, int row){
+        super(column, row);
     }
 
 }
