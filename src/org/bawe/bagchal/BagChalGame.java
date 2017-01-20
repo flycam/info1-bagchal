@@ -2,12 +2,12 @@ package org.bawe.bagchal;
 
 
 /**
- * BagChal Model to coordinate the gameplay. One object of this class is one game.
+ * BagChalGame Model to coordinate the gameplay. One object of this class is one game.
  *
  * @Author Stephan Westphal
  */
 
-public class BagChal {
+public class BagChalGame {
 
 	/**
 	 * Tigers will be initialized and placed immediately, as they start in the 4 corners.
@@ -63,7 +63,7 @@ public class BagChal {
 			};
 
 	/**
-	 * BagChal Game Model constructor. Nothing to initialize here.
+	 * BagChalGame Game Model constructor. Nothing to initialize here.
 	 */
 	public void BagChal(){
 	}
@@ -258,7 +258,7 @@ public class BagChal {
 	 * @return number of hops of travel are possible (0: none, 1: move, 2: jump)
 	 */
 	private int checkMoveValidity(int fromColumn, int fromRow, int toColumn, int toRow){
-		return (BagChal.validMoves[fromRow*5 + fromColumn][toRow*5 + toColumn]);
+		return (BagChalGame.validMoves[fromRow*5 + fromColumn][toRow*5 + toColumn]);
 	}
 
 	/**

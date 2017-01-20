@@ -8,7 +8,7 @@ public class BagChalController {
     /**
      * Current game, will be initialized for each game to play.
      */
-    private BagChal game;
+    private BagChalGame game;
 
     /**
      * View. Will be passed from Main depending on the user interface.
@@ -23,7 +23,7 @@ public class BagChalController {
     /**
      * Constructor - requires a valid view and newly initialized game object.
      */
-    public BagChalController(BagChalView view, BagChal game){
+    public BagChalController(BagChalView view, BagChalGame game){
         this.view = view;
         this.game = game;
         this.input = new Input();

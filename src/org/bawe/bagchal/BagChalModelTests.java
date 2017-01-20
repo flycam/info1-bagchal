@@ -8,26 +8,26 @@ import junit.framework.TestCase;
 public class BagChalModelTests extends TestCase{
 
     public void testConstructor(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game != null);
     }
 
     public void testGetCurrentPlayer(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game.getCurrentPlayer() == Player.GOAT);
         game.placeFigure(1,1);
         assertTrue(game.getCurrentPlayer() == Player.TIGER);
     }
 
     public void testGetNumGoatsAvailable(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game.getNumGoatsAvailable() == Goat.maxInstances);
         game.placeFigure(1,1);
         assertTrue(game.getNumGoatsAvailable() == Goat.maxInstances-1);
     }
 
     public void testGetNumGoatsEaten(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game.getNumGoatsEaten() == 0);
         game.placeFigure(1,1);
         game.moveFigure(0,0,2,2);
@@ -35,7 +35,7 @@ public class BagChalModelTests extends TestCase{
     }
 
     public void testGetBoard() {
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         game.placeFigure(1,1);
         assertTrue(game.getBoard()[0][0] == 'T');
         assertTrue(game.getBoard()[4][0] == 'T');
@@ -47,7 +47,7 @@ public class BagChalModelTests extends TestCase{
     }
 
     public void testMoveFigure(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game.getBoard()[0][0] == 'T');
         assertTrue(game.getBoard()[2][2] == 0);
         game.placeFigure(1,1);
@@ -57,13 +57,13 @@ public class BagChalModelTests extends TestCase{
     }
 
     public void testPlaceFigure(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         game.placeFigure(1,1);
         assertTrue(game.getBoard()[1][1] == 'G');
     }
 
     public void testGetWinner(){
-        BagChal game = new BagChal();
+        BagChalGame game = new BagChalGame();
         assertTrue(game.getWinner() == null);
         game.placeFigure(1,1);
         game.moveFigure(0,0,2,2); // eats 1,1
