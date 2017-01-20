@@ -31,6 +31,11 @@ public class BagChalGame {
 	private Player currentPlayer = Player.GOAT; // Goat or Tiger
 
 	/**
+	 * Signals the winner of the game, and the state of the game.
+	 */
+	private Player winner = null;
+
+	/**
 	 * Adjacency Matrix showing possible from/to move combinations.
 	 */
 	private static int [] [] validMoves =
@@ -105,17 +110,22 @@ public class BagChalGame {
 	}
 
 	/**
-	 * Checks if a player has won.
+	 * Returns the winner of the Game
 	 * @return {@link Player} winner, null if game is still active.
 	 */
 	public Player getWinner(){
-		Player winner = null;
+		return this.winner;
+	}
+
+	/**
+	 * Checks if a game has been won.
+	 */
+	public void determineWinner(){
 		if(getNumGoatsEaten() >= 5){
-			winner = Player.TIGER;
+			this.winner = Player.TIGER;
 		}else if(countPossibleTigerMoves() == 0){
-			winner = Player.GOAT;
+			this.winner = Player.GOAT;
 		}
-		return winner;
 	}
 
 	/**
@@ -149,6 +159,10 @@ public class BagChalGame {
 	 * @param row row of destination on board, ranging from 0 to 4
 	 */
 	public void placeFigure(int column, int row){
+		if(this.winner != null){
+			throw new GameOverException();
+		}
+
 		if(!this.checkBounds(column, row)){
 			throw new OutOfBoundsException();
 		}
@@ -168,6 +182,9 @@ public class BagChalGame {
 		}else{
 			throw new IllegalMoveException("Tiger cannot be placed");
 		}
+
+		// check for a possible winner after each move.
+		this.determineWinner();
 	}
 
 	/**
@@ -178,6 +195,10 @@ public class BagChalGame {
 	 * @param toRow row of destination on board, ranging from 0 to 4
 	 */
 	public void moveFigure(int fromColumn, int fromRow, int toColumn, int toRow){
+		if(this.winner != null){
+			throw new GameOverException();
+		}
+
 		if(!this.checkBounds(toColumn, toRow)){
 			throw new OutOfBoundsException();
 		}
@@ -203,6 +224,9 @@ public class BagChalGame {
 			this.moveTiger(fromColumn, fromRow, toColumn, toRow, (moveValidity == 2));
 			this.currentPlayer = Player.GOAT;
 		}
+
+		// check for a possible winner after each move.
+		this.determineWinner();
 	}
 
 

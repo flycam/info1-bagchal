@@ -22,3 +22,13 @@ class IllegalMoveException extends IllegalArgumentException{
         super(message);
     }
 }
+
+/**
+ * Exception to use when Game is over but Player wants to make another move. Mostly needed if the model is used with
+ * someone else's controller.
+ */
+class GameOverException extends IllegalArgumentException{
+    public GameOverException(){
+        super();
+    }
+}
